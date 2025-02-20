@@ -46,7 +46,6 @@ db_texts = [
     "부족",
     "즐거움",
     "아픔",
-    "사랑",
     "소망",
     "어둠",
     "꿈",
@@ -85,7 +84,7 @@ def process_embeddings(texts):
     embeddings = embedding_model.embed_documents(texts)
     embeddings_array = np.array(embeddings)
     st.write(f"DB 텍스트 수: {len(texts)}")
-    st.write(f"임베딩 배열 shape: {embeddings_array.shape}")
+    # st.write(f"임베딩 배열 shape: {embeddings_array.shape}")
     return embeddings_array
 
 # 미리 DB 텍스트 임베딩 생성
@@ -97,7 +96,8 @@ def create_visualization_3d(embeddings_array, texts, query_embedding=None, query
     reduced = pca.fit_transform(embeddings_array)
     df = pd.DataFrame(reduced, columns=['PC1', 'PC2', 'PC3'])
     df['text'] = texts
-
+    df['text'] = df['text'].apply(lambda x: x[:5])  # 5글자로 제한
+    
     fig = px.scatter_3d(df, x='PC1', y='PC2', z='PC3', text='text',
                         title='DB 텍스트 임베딩 3D 시각화')
     fig.update_traces(textposition='top center', marker=dict(size=6))
@@ -129,6 +129,7 @@ def create_visualization_2d(embeddings_array, texts, query_embedding=None, query
     reduced = pca.fit_transform(embeddings_array)
     df = pd.DataFrame(reduced, columns=['PC1', 'PC2'])
     df['text'] = texts
+    df['text'] = df['text'].apply(lambda x: x[:5])  # 5글자로 제한
 
     fig = px.scatter(df, x='PC1', y='PC2', text='text',
                      title='DB 텍스트 임베딩 2D 시각화')
