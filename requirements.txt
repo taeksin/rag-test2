@@ -1,8 +1,8 @@
 faiss-cpu
-sentence-transformers
-streamlit
-scikit-learn
 plotly
 numpy
 langchain_openai
-load_dotenv
+streamlit
+scikit-learn
+pandas
+python-dotenv
