@@ -94,11 +94,11 @@ db_embeddings = process_embeddings(db_texts)
 def create_visualization_3d(embeddings_array, texts, query_embedding=None, query_text=None):
     pca = PCA(n_components=3)
     reduced = pca.fit_transform(embeddings_array)
-    df = pd.DataFrame(reduced, columns=['PC1', 'PC2', 'PC3'])
+    df = pd.DataFrame(reduced, columns=['X축', 'Y축', 'Z축'])
     df['text'] = texts
     df['text'] = df['text'].apply(lambda x: x[:5])  # 5글자로 제한
     
-    fig = px.scatter_3d(df, x='PC1', y='PC2', z='PC3', text='text',
+    fig = px.scatter_3d(df, x='X축', y='Y축', z='Z축', text='text',
                         title='DB 텍스트 임베딩 3D 시각화')
     fig.update_traces(textposition='top center', marker=dict(size=6))
     
@@ -127,11 +127,11 @@ def create_visualization_3d(embeddings_array, texts, query_embedding=None, query
 def create_visualization_2d(embeddings_array, texts, query_embedding=None, query_text=None):
     pca = PCA(n_components=2)
     reduced = pca.fit_transform(embeddings_array)
-    df = pd.DataFrame(reduced, columns=['PC1', 'PC2'])
+    df = pd.DataFrame(reduced, columns=['X축', 'Y축'])
     df['text'] = texts
     df['text'] = df['text'].apply(lambda x: x[:5])  # 5글자로 제한
 
-    fig = px.scatter(df, x='PC1', y='PC2', text='text',
+    fig = px.scatter(df, x='X축', y='Y축', text='text',
                      title='DB 텍스트 임베딩 2D 시각화')
     fig.update_traces(textposition='top center', marker=dict(size=6))
     
