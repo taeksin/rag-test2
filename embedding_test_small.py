@@ -31,7 +31,6 @@ def load_sidebar_text(filename="rag-test.txt"):
         content = file.read()  # 파일 전체 내용을 읽음
 
     return content
-
 # 미리 정의된 벡터 DB 텍스트
 db_texts = [
     "세금",
@@ -76,6 +75,39 @@ db_texts = [
     "세금을 내는 것이 국민의 의무이다."
     "그는 조세를 부담하며 국가에 충성하였다. "
 ]
+# def load_db_texts(filename="rag-test DB용.txt"):
+#     if not os.path.exists(filename):
+#         st.error(f"파일 '{filename}'이 존재하지 않습니다.")
+#         return []
+    
+#     with open(filename, "r", encoding="utf-8") as file:
+#         lines = file.readlines()
+    
+#     # 불필요한 구문 제거 (목록 시작 부분만 가져오기)
+#     texts = []
+#     for line in lines:
+#         line = line.strip()
+        
+#         # 빈 줄 또는 리스트 선언 부분 제외
+#         if not line or line.startswith("db_texts = [") or line.startswith("]"):
+#             continue
+        
+#         # 맨 앞과 뒤의 따옴표 제거
+#         if (line.startswith('"') and line.endswith('"')) or (line.startswith("'") and line.endswith("'")):
+#             line = line[1:-1]  # 첫 번째와 마지막 문자 제거
+        
+#         # 마지막에 쉼표가 있으면 제거
+#         if line.endswith(","):
+#             line = line[:-1]
+        
+#         texts.append(line)
+#     return texts
+
+# # DB 텍스트 로드
+# db_texts = load_db_texts()
+# if not db_texts:
+#     st.error("DB 텍스트 파일이 비어 있습니다.")
+#     st.stop()
 
 # DB 텍스트를 임베딩하는 함수
 def process_embeddings(texts):
