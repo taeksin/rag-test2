@@ -32,83 +32,23 @@ def load_sidebar_text(filename="rag-test.txt"):
 
     return content
 
-# 미리 정의된 벡터 DB 텍스트
-db_texts = [
-    "세금",
-    "소득",
-    "납세",
-    "과세",
-    "조세",
-    "부가세",
-    "법인세",
-    "관세",
-    "신고",
-    "공제",
-    "감면",
-    "소득세",
-    "납부",
-    "부역",
-    "세목",
-    "환급",
-    "돈",
-    "세금 깎기",
-    "내야 할 돈",
-    "돌려받을 돈",
-    "혜택",
-    "수입",
-    "부과",
-    "절세",
-    "공납",
-    "세율",
-    "세금을 신고해야 한다.",
-    "소득세를 납부하세요.",
-    "세금을 내야 합니다.",
-    "부가세를 납부하시오.",
-    "세금을 줄이는 방법이 있다.",
-    "세금 환급을 받을 수 있다.",
-    "부역을 면제받았다.",
-    "공납을 완료하였다.",
-    "그는 조세를 납부하였다.",
-    "세율이 변경되었다.",
-    "근로소득세 신고 기한 내에 반드시 신고해야 한다.",
-    "세금 신고 마감일이 다가오니 서둘러야 한다.",
-    "절세를 위해 공제 항목을 꼼꼼히 확인하세요.",
-    "세금을 내는 것이 국민의 의무이다."
-    "그는 조세를 부담하며 국가에 충성하였다. "
-]
-# def load_db_texts(filename="rag-test DB용.txt"):
-#     if not os.path.exists(filename):
-#         st.error(f"파일 '{filename}'이 존재하지 않습니다.")
-#         return []
+# 미리 정의된 벡터 DB 텍스트 불러오기
+def load_db_texts(filename="rag-test DB용.txt"):
+    if not os.path.exists(filename):
+        st.error(f"파일 '{filename}'이 존재하지 않습니다.")
+        return []
     
-#     with open(filename, "r", encoding="utf-8") as file:
-#         lines = file.readlines()
-    
-#     # 불필요한 구문 제거 (목록 시작 부분만 가져오기)
-#     texts = []
-#     for line in lines:
-#         line = line.strip()
-        
-#         # 빈 줄 또는 리스트 선언 부분 제외
-#         if not line or line.startswith("db_texts = [") or line.startswith("]"):
-#             continue
-        
-#         # 맨 앞과 뒤의 따옴표 제거
-#         if (line.startswith('"') and line.endswith('"')) or (line.startswith("'") and line.endswith("'")):
-#             line = line[1:-1]  # 첫 번째와 마지막 문자 제거
-        
-#         # 마지막에 쉼표가 있으면 제거
-#         if line.endswith(","):
-#             line = line[:-1]
-        
-#         texts.append(line)
-#     return texts
+    with open(filename, "r", encoding="utf-8") as file:
+        # 각 줄을 읽고, 양 끝 공백 제거 후 빈 줄 제외
+        texts = [line.strip() for line in file.readlines() if line.strip()]
+    print(texts)
+    return texts
 
-# # DB 텍스트 로드
-# db_texts = load_db_texts()
-# if not db_texts:
-#     st.error("DB 텍스트 파일이 비어 있습니다.")
-#     st.stop()
+# DB 텍스트 로드
+db_texts = load_db_texts()
+if not db_texts:
+    st.error("DB 텍스트 파일이 비어 있습니다.")
+    st.stop()
 
 # DB 텍스트를 임베딩하는 함수
 def process_embeddings(texts):
@@ -210,13 +150,20 @@ query_input = st.text_input("검색할 텍스트를 입력하세요:", placehold
 
 if st.button("검색 실행"):
     if query_input:
-        results, query_embedding = search_query(query_input, db_embeddings, db_texts)
-        
-        st.subheader("검색 결과")
-        # 결과를 DataFrame으로 변환하여 출력 (L2 거리는 낮을수록, 코사인 유사도는 1에 가까울수록 유사)
+        # 입력된 텍스트를 임베딩 변환
+        query_embedding = embedding_model.embed_documents([query_input])
+        query_embedding = np.array(query_embedding)
+
+        # DB 임베딩과 비교
+        results, _ = search_query(query_input, db_embeddings, db_texts)
+
+        st.subheader("임베딩 기반 검색 결과")
         df_results = pd.DataFrame(results, columns=["텍스트", "L2 거리", "코사인 유사도"])
-        st.dataframe(df_results.style.format({"L2 거리": "{:.4f}", "코사인 유사도": "{:.4f}"}))
         
+        # 결과 출력 (유사도 높은 순으로 정렬)
+        df_results = df_results.sort_values(by="코사인 유사도", ascending=False)
+        st.dataframe(df_results.style.format({"L2 거리": "{:.4f}", "코사인 유사도": "{:.4f}"}))
+
         # 3D, 2D 시각화를 탭으로 표시
         tab1, tab2 = st.tabs(["3D 시각화", "2D 시각화"])
         with tab1:
@@ -227,6 +174,7 @@ if st.button("검색 실행"):
             st.plotly_chart(fig_2d)
     else:
         st.warning("검색할 텍스트를 입력해주세요.")
+
 
 with st.sidebar:
     st.header("사용 방법")
