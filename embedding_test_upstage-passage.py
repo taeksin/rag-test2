@@ -148,7 +148,7 @@ def create_visualization_2d(embeddings_array, texts, query_embedding=None, query
     return fig, df
 
 def main():
-    st.title("Upstage Solar Embeddings 테스트")
+    st.title("Upstage DB(passage로 임베딩) + query(passage로 임베딩) 테스트")
     st.write("쿼리 텍스트를 입력하면 로컬에 저장된 DB 임베딩과 비교하여 유사도를 계산하고, 2D 및 3D 시각화를 제공합니다.")
     
     # 사이드바 구성: 사용 방법 및 DB 텍스트 목록 표시
