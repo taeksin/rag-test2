@@ -1,4 +1,5 @@
 import os
+import pickle
 import streamlit as st
 import numpy as np
 from langchain_openai import OpenAIEmbeddings
@@ -26,10 +27,8 @@ def load_sidebar_text(filename="rag-test.txt"):
     if not os.path.exists(filename):
         st.error(f"파일 '{filename}'이 존재하지 않습니다.")
         return "파일을 찾을 수 없습니다."
-
     with open(filename, "r", encoding="utf-8") as file:
         content = file.read()  # 파일 전체 내용을 읽음
-
     return content
 
 # 미리 정의된 벡터 DB 텍스트 불러오기
@@ -37,11 +36,9 @@ def load_db_texts(filename="rag-test DB용.txt"):
     if not os.path.exists(filename):
         st.error(f"파일 '{filename}'이 존재하지 않습니다.")
         return []
-    
     with open(filename, "r", encoding="utf-8") as file:
         # 각 줄을 읽고, 양 끝 공백 제거 후 빈 줄 제외
         texts = [line.strip() for line in file.readlines() if line.strip()]
-    # print(texts)
     return texts
 
 # DB 텍스트 로드
@@ -50,16 +47,17 @@ if not db_texts:
     st.error("DB 텍스트 파일이 비어 있습니다.")
     st.stop()
 
-# DB 텍스트를 임베딩하는 함수
-def process_embeddings(texts):
-    embeddings = embedding_model.embed_documents(texts)
-    embeddings_array = np.array(embeddings)
-    st.write(f"DB 텍스트 수: {len(texts)}")
-    # st.write(f"임베딩 배열 shape: {embeddings_array.shape}")
-    return embeddings_array
+# 로컬에 저장된 DB 임베딩 데이터 로드 함수
+def load_embeddings_from_file(filepath="vdb/openai/large/db_embeddings.pkl"):
+    if not os.path.exists(filepath):
+        st.error(f"임베딩 파일 '{filepath}'을 찾을 수 없습니다.")
+        st.stop()
+    with open(filepath, "rb") as f:
+        embeddings = pickle.load(f)
+    return np.array(embeddings)
 
-# 미리 DB 텍스트 임베딩 생성
-db_embeddings = process_embeddings(db_texts)
+# 미리 저장된 DB 임베딩 로드
+db_embeddings = load_embeddings_from_file()
 
 # 3D 시각화 함수 (PCA)
 def create_visualization_3d(embeddings_array, texts, query_embedding=None, query_text=None):
@@ -102,8 +100,7 @@ def create_visualization_2d(embeddings_array, texts, query_embedding=None, query
     df['text'] = texts
     df['text'] = df['text'].apply(lambda x: x[:5])  # 5글자로 제한
 
-    fig = px.scatter(df, x='X축', y='Y축', text='text',
-                     title='DB 텍스트 임베딩 2D 시각화')
+    fig = px.scatter(df, x='X축', y='Y축', text='text', title='DB 텍스트 임베딩 2D 시각화')
     fig.update_traces(textposition='top center', marker=dict(size=6))
     
     # 쿼리 임베딩 표시
@@ -174,7 +171,6 @@ if st.button("검색 실행"):
             st.plotly_chart(fig_2d)
     else:
         st.warning("검색할 텍스트를 입력해주세요.")
-
 
 with st.sidebar:
     st.header("사용 방법")
