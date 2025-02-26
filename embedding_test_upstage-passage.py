@@ -57,7 +57,8 @@ def get_query_embedding(text):
     try:
         response = client.embeddings.create(
             input=text, 
-            model="embedding-query"
+            # model="embedding-query"
+            model="embedding-passage"
         )
         return response.data[0].embedding
     except Exception as e:
@@ -155,7 +156,7 @@ def main():
         st.header("사용 방법")
         st.write("""
         1. 검색할 텍스트를 입력합니다. (예: 관세)
-        2. '검색 실행' 버튼을 클릭하면, DB 텍스트와 비교하여 L2 거리와 코사인 유사도를 계산합니다.
+        2. '검색 실행' 버튼 또는 'Enter' 키를 누르면 실행됩니다.
         3. 결과는 유사도가 높은 순으로 정렬되어 표시됩니다.
         4. 하단의 탭을 통해 2D와 3D 시각화를 확인할 수 있습니다.
         """)
@@ -172,9 +173,19 @@ def main():
         st.error("DB 임베딩 파일을 불러올 수 없습니다.")
         st.stop()
     
+    # 세션 상태 초기화
+    if "query_trigger" not in st.session_state:
+        st.session_state.query_trigger = False
+
     # 사용자 입력 받기
-    query = st.text_input("검색할 텍스트를 입력하세요:", placeholder="예: 관세")
-    if st.button("검색 실행"):
+    query = st.text_input("검색할 텍스트를 입력하세요:", placeholder="예: 관세", key="query")
+
+    # 엔터 입력 시 자동 실행
+    if query and st.session_state.query_trigger is False:
+        st.session_state.query_trigger = True
+
+    # 버튼을 누르거나 Enter 입력 시 실행
+    if st.button("검색 실행") or st.session_state.query_trigger:
         if query:
             results, query_embedding = search_query(query, db_embeddings, db_texts)
             if results:
@@ -191,10 +202,9 @@ def main():
                 with tab2:
                     fig_2d, _ = create_visualization_2d(db_embeddings, db_texts, query_embedding=query_embedding, query_text=query)
                     st.plotly_chart(fig_2d)
-            else:
-                st.warning("유사한 결과를 찾지 못했습니다.")
-        else:
-            st.warning("검색할 텍스트를 입력해주세요.")
+            
+            # 실행 후 상태 초기화
+            st.session_state.query_trigger = False
 
 if __name__ == "__main__":
     main()
