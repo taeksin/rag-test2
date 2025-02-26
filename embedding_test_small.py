@@ -41,7 +41,7 @@ def load_db_texts(filename="rag-test DB용.txt"):
     with open(filename, "r", encoding="utf-8") as file:
         # 각 줄을 읽고, 양 끝 공백 제거 후 빈 줄 제외
         texts = [line.strip() for line in file.readlines() if line.strip()]
-    print(texts)
+    # print(texts)
     return texts
 
 # DB 텍스트 로드
