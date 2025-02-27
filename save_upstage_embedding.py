@@ -19,7 +19,7 @@ client = OpenAI(
 )
 
 # DB 텍스트 로드 함수
-def load_db_texts(filename="rag-test DB용.txt"):
+def load_db_texts(filename="rag-test DB_set_02.txt"):
     if not os.path.exists(filename):
         print(f"파일 '{filename}'이 존재하지 않습니다.")
         return []
@@ -27,7 +27,7 @@ def load_db_texts(filename="rag-test DB용.txt"):
         texts = [line.strip() for line in file.readlines() if line.strip()]
     return texts
 
-# Upstage API를 사용하여 DB용 텍스트 임베딩을 배치로 가져오는 함수
+# Upstage API를 사용하여 DB_set_02 텍스트 임베딩을 배치로 가져오는 함수
 def get_db_embedding(texts):
     """
     texts: DB 텍스트 리스트

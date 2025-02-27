@@ -26,7 +26,7 @@ client = OpenAI(
 )
 
 # DB 텍스트 로드 함수
-def load_db_texts(filename="rag-test DB용.txt"):
+def load_db_texts(filename="rag-test DB_set_02.txt"):
     if not os.path.exists(filename):
         st.error(f"파일 '{filename}'이 존재하지 않습니다.")
         return []
@@ -44,7 +44,7 @@ def load_sidebar_text(filename="rag-test.txt"):
     return content
 
 # 로컬에 저장된 임베딩 데이터 불러오기
-def load_embeddings_from_file(filename="vdb/upstage/db_embeddings.pkl"):
+def load_embeddings_from_file(filename="vdb/upstage/db_embeddings_set_02.pkl"):
     if not os.path.exists(filename):
         st.error(f"임베딩 파일 '{filename}'을 찾을 수 없습니다.")
         return None

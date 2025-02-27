@@ -6,3 +6,6 @@ streamlit
 scikit-learn
 pandas
 python-dotenv
+langchain
+langchain-community
+openpyxl

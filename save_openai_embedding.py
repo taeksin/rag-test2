@@ -22,7 +22,7 @@ MODEL = "small"
 embedding_model = OpenAIEmbeddings(model=f"text-embedding-3-{MODEL}", openai_api_key=api_key)
 
 # DB 텍스트 로드 함수
-def load_db_texts(filename="rag-test DB용.txt"):
+def load_db_texts(filename="rag-test DB_set_01.txt"):
     if not os.path.exists(filename):
         print(f"ERROR: 파일 '{filename}'이 존재하지 않습니다.")
         exit(1)

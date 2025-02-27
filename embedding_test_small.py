@@ -32,7 +32,7 @@ def load_sidebar_text(filename="rag-test.txt"):
     return content
 
 # 미리 정의된 벡터 DB 텍스트 불러오기
-def load_db_texts(filename="rag-test DB용.txt"):
+def load_db_texts(filename="rag-test DB_set_01.txt"):
     if not os.path.exists(filename):
         st.error(f"파일 '{filename}'이 존재하지 않습니다.")
         return []
